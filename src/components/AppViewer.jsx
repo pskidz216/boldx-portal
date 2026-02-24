@@ -29,11 +29,9 @@ export default function AppViewer({ appId, onBack }) {
     buildUrl();
   }, [app?.url, appId]);
 
-  if (!app || !iframeSrc) return null;
-
   // Also send via postMessage as a fallback
   useEffect(() => {
-    if (!iframeLoaded) return;
+    if (!iframeLoaded || !app) return;
     let cancelled = false;
 
     const sendSession = async () => {
@@ -75,7 +73,9 @@ export default function AppViewer({ appId, onBack }) {
     window.addEventListener("message", handleReady);
     sendSession();
     return () => { cancelled = true; window.removeEventListener("message", handleReady); };
-  }, [iframeLoaded, appId]);
+  }, [iframeLoaded, appId, app]);
+
+  if (!app || !iframeSrc) return null;
 
   return (
     <AnimatePresence>
