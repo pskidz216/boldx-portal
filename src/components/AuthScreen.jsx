@@ -1,6 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { B, font } from "../theme";
 import BXELogo from "./BXELogo";
+
+function useIsMobile(breakpoint = 480) {
+  const [m, setM] = useState(typeof window !== "undefined" && window.innerWidth <= breakpoint);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const h = (e) => setM(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, [breakpoint]);
+  return m;
+}
 
 export default function AuthScreen({
   onLogin,
@@ -19,6 +30,7 @@ export default function AuthScreen({
   const [lastName, setLastName] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [localLoading, setLocalLoading] = useState(false);
+  const isMobile = useIsMobile();
 
   const clearMessages = () => { setAuthError(""); setAuthMessage(""); };
 
@@ -90,21 +102,21 @@ export default function AuthScreen({
     }}>
       {/* Animated background blobs */}
       <div style={{
-        position: "fixed", top: "-15%", right: "-10%", width: 600, height: 600,
+        position: "absolute", top: "-15%", right: "-10%", width: isMobile ? 300 : 600, height: isMobile ? 300 : 600,
         borderRadius: "50%", filter: "blur(80px)",
         background: "radial-gradient(circle, rgba(180,140,255,0.45) 0%, transparent 65%)",
         animation: "blobFloat1 22s ease-in-out infinite",
         pointerEvents: "none",
       }} />
       <div style={{
-        position: "fixed", bottom: "-10%", left: "-8%", width: 500, height: 500,
+        position: "absolute", bottom: "-10%", left: "-8%", width: isMobile ? 250 : 500, height: isMobile ? 250 : 500,
         borderRadius: "50%", filter: "blur(80px)",
         background: "radial-gradient(circle, rgba(255,140,180,0.40) 0%, transparent 65%)",
         animation: "blobFloat2 28s ease-in-out infinite",
         pointerEvents: "none",
       }} />
       <div style={{
-        position: "fixed", top: "40%", left: "55%", width: 450, height: 450,
+        position: "absolute", top: "40%", left: "55%", width: isMobile ? 225 : 450, height: isMobile ? 225 : 450,
         borderRadius: "50%", filter: "blur(80px)",
         background: "radial-gradient(circle, rgba(120,180,255,0.35) 0%, transparent 65%)",
         animation: "blobFloat3 25s ease-in-out infinite",
@@ -113,23 +125,23 @@ export default function AuthScreen({
 
       {/* 3D glass orbs */}
       <div style={{
-        position: "fixed", top: "15%", left: "18%",
-        width: 60, height: 60, borderRadius: "50%",
+        position: "absolute", top: "15%", left: "18%",
+        width: isMobile ? 35 : 60, height: isMobile ? 35 : 60, borderRadius: "50%",
         background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(255,255,255,0.15) 60%)",
         border: "1px solid rgba(255,255,255,0.5)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.06)",
         animation: "orbFloat 8s ease-in-out infinite",
         pointerEvents: "none",
       }} />
-      <div style={{
-        position: "fixed", bottom: "25%", right: "15%",
+      {!isMobile && <div style={{
+        position: "absolute", bottom: "25%", right: "15%",
         width: 40, height: 40, borderRadius: "50%",
         background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(255,255,255,0.1) 60%)",
         border: "1px solid rgba(255,255,255,0.4)",
         boxShadow: "0 6px 24px rgba(0,0,0,0.04)",
         animation: "orbFloat 10s ease-in-out infinite 3s",
         pointerEvents: "none",
-      }} />
+      }} />}
 
       <div style={{
         position: "relative", zIndex: 10,
@@ -172,7 +184,7 @@ export default function AuthScreen({
         )}
 
         {mode === "signup" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 12 }}>
             <div><label style={labelStyle}>First Name</label><input style={inputStyle} value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First" onKeyDown={handleKeyDown} /></div>
             <div><label style={labelStyle}>Last Name</label><input style={inputStyle} value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last" onKeyDown={handleKeyDown} /></div>
           </div>

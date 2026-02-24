@@ -4,6 +4,8 @@ import { B, font } from "../theme";
 
 export default function AppCard({ app, onClick, index }) {
   const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const active = hovered || pressed;
 
   return (
     <motion.div
@@ -13,22 +15,25 @@ export default function AppCard({ app, onClick, index }) {
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setPressed(true)}
+      onTouchEnd={() => setTimeout(() => setPressed(false), 200)}
       style={{
         position: "relative",
         cursor: "pointer",
+        WebkitTapHighlightColor: "transparent",
         borderRadius: B.radiusXl,
-        background: hovered
+        background: active
           ? "rgba(255,255,255,0.55)"
           : "rgba(255,255,255,0.35)",
         backdropFilter: B.blurLg,
         WebkitBackdropFilter: B.blurLg,
-        border: `1.5px solid ${hovered ? "rgba(255,255,255,0.80)" : "rgba(255,255,255,0.55)"}`,
-        boxShadow: hovered
+        border: `1.5px solid ${active ? "rgba(255,255,255,0.80)" : "rgba(255,255,255,0.55)"}`,
+        boxShadow: active
           ? `0 16px 48px rgba(0,0,0,0.10), 0 0 0 1px rgba(255,255,255,0.3), 0 0 60px ${app.color}12`
           : "0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.15)",
         padding: "32px 28px",
         transition: "all 0.4s cubic-bezier(0.25,0.46,0.45,0.94)",
-        transform: hovered ? "translateY(-6px)" : "translateY(0)",
+        transform: active ? "translateY(-6px)" : "translateY(0)",
         overflow: "hidden",
         fontFamily: font,
       }}
@@ -36,14 +41,14 @@ export default function AppCard({ app, onClick, index }) {
       {/* Top edge glass highlight — refraction line */}
       <div style={{
         position: "absolute", top: 0, left: 16, right: 16, height: 1,
-        background: `linear-gradient(90deg, transparent, rgba(255,255,255,${hovered ? 0.9 : 0.6}), transparent)`,
+        background: `linear-gradient(90deg, transparent, rgba(255,255,255,${active ? 0.9 : 0.6}), transparent)`,
         transition: "all 0.4s",
       }} />
 
       {/* Inner glow at top */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, height: 80,
-        background: `linear-gradient(180deg, rgba(255,255,255,${hovered ? 0.25 : 0.15}), transparent)`,
+        background: `linear-gradient(180deg, rgba(255,255,255,${active ? 0.25 : 0.15}), transparent)`,
         borderRadius: `${B.radiusXl}px ${B.radiusXl}px 0 0`,
         pointerEvents: "none",
         transition: "all 0.4s",
@@ -54,7 +59,7 @@ export default function AppCard({ app, onClick, index }) {
         position: "absolute", top: 0, left: 0, right: 0, height: 2,
         background: `linear-gradient(90deg, ${app.color}, ${app.colorEnd || app.color})`,
         borderRadius: `${B.radiusXl}px ${B.radiusXl}px 0 0`,
-        opacity: hovered ? 1 : 0.6,
+        opacity: active ? 1 : 0.6,
         transition: "opacity 0.4s",
       }} />
 
@@ -66,8 +71,8 @@ export default function AppCard({ app, onClick, index }) {
         display: "flex", alignItems: "center", justifyContent: "center",
         marginBottom: 20, fontSize: 26,
         transition: "all 0.4s",
-        transform: hovered ? "scale(1.08)" : "scale(1)",
-        boxShadow: hovered
+        transform: active ? "scale(1.08)" : "scale(1)",
+        boxShadow: active
           ? `0 4px 20px ${app.color}25, inset 0 1px 0 rgba(255,255,255,0.6)`
           : "0 2px 8px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.5)",
       }}>
@@ -117,8 +122,8 @@ export default function AppCard({ app, onClick, index }) {
 
         <div style={{
           fontSize: 13, fontWeight: 600, color: B.orange,
-          opacity: hovered ? 1 : 0,
-          transform: hovered ? "translateX(0)" : "translateX(-8px)",
+          opacity: 1,
+          transform: "translateX(0)",
           transition: "all 0.3s",
           display: "flex", alignItems: "center", gap: 4,
         }}>

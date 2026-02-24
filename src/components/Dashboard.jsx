@@ -1,37 +1,31 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { B, font } from "../theme";
 import BXELogo from "./BXELogo";
 import AppCard from "./AppCard";
 import APPS from "../config/apps";
 
+function useIsMobile(breakpoint = 768) {
+  const [m, setM] = useState(typeof window !== "undefined" && window.innerWidth <= breakpoint);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const h = (e) => setM(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, [breakpoint]);
+  return m;
+}
+
 /* ── Light Glassmorphism Background ── */
 function GlassBackground() {
+  const isMobile = useIsMobile();
+  const s = isMobile ? 0.45 : 1;
   const blobs = [
-    { // Soft lavender — dominant
-      color: "rgba(180,140,255,0.45)",
-      size: 700, top: "-15%", right: "-10%",
-      animation: "blobFloat1 22s ease-in-out infinite",
-    },
-    { // Rose pink — warmth
-      color: "rgba(255,140,180,0.40)",
-      size: 550, top: "60%", left: "-12%",
-      animation: "blobFloat2 28s ease-in-out infinite",
-    },
-    { // Sky blue — coolness
-      color: "rgba(120,180,255,0.38)",
-      size: 600, top: "-5%", left: "20%",
-      animation: "blobFloat3 25s ease-in-out infinite",
-    },
-    { // Peach/orange — brand warmth
-      color: "rgba(255,180,120,0.35)",
-      size: 500, bottom: "-10%", right: "15%",
-      animation: "blobFloat4 30s ease-in-out infinite",
-    },
-    { // Mint/teal — freshness
-      color: "rgba(120,230,210,0.30)",
-      size: 400, top: "30%", right: "40%",
-      animation: "blobFloat5 26s ease-in-out infinite",
-    },
+    { color: "rgba(180,140,255,0.45)", size: 700 * s, top: "-15%", right: "-10%", animation: "blobFloat1 22s ease-in-out infinite" },
+    { color: "rgba(255,140,180,0.40)", size: 550 * s, top: "60%", left: "-12%", animation: "blobFloat2 28s ease-in-out infinite" },
+    { color: "rgba(120,180,255,0.38)", size: 600 * s, top: "-5%", left: "20%", animation: "blobFloat3 25s ease-in-out infinite" },
+    { color: "rgba(255,180,120,0.35)", size: 500 * s, bottom: "-10%", right: "15%", animation: "blobFloat4 30s ease-in-out infinite" },
+    { color: "rgba(120,230,210,0.30)", size: 400 * s, top: "30%", right: "40%", animation: "blobFloat5 26s ease-in-out infinite" },
   ];
 
   return (
@@ -57,7 +51,7 @@ function GlassBackground() {
       {/* Floating 3D glass orbs */}
       <div style={{
         position: "absolute", top: "12%", right: "18%",
-        width: 80, height: 80, borderRadius: "50%",
+        width: isMobile ? 50 : 80, height: isMobile ? 50 : 80, borderRadius: "50%",
         background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(255,255,255,0.15) 60%, rgba(200,180,255,0.1))",
         border: "1px solid rgba(255,255,255,0.6)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.06), inset 0 -4px 12px rgba(255,255,255,0.3)",
@@ -66,14 +60,14 @@ function GlassBackground() {
       }} />
       <div style={{
         position: "absolute", bottom: "20%", left: "12%",
-        width: 50, height: 50, borderRadius: "50%",
+        width: isMobile ? 30 : 50, height: isMobile ? 30 : 50, borderRadius: "50%",
         background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7), rgba(255,255,255,0.1) 60%, rgba(255,180,200,0.1))",
         border: "1px solid rgba(255,255,255,0.5)",
         boxShadow: "0 6px 24px rgba(0,0,0,0.05), inset 0 -3px 8px rgba(255,255,255,0.2)",
         animation: "orbFloat 10s ease-in-out infinite 2s",
         pointerEvents: "none",
       }} />
-      <div style={{
+      {!isMobile && <div style={{
         position: "absolute", top: "55%", right: "8%",
         width: 35, height: 35, borderRadius: "50%",
         background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(255,255,255,0.1) 60%)",
@@ -81,7 +75,7 @@ function GlassBackground() {
         boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
         animation: "orbFloat 12s ease-in-out infinite 4s",
         pointerEvents: "none",
-      }} />
+      }} />}
     </div>
   );
 }
@@ -147,7 +141,7 @@ export default function Dashboard({ user, onSignOut, onOpenApp, onSignIn }) {
             <>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: B.text }}>{displayName}</div>
-                <div style={{ fontSize: 11, color: B.textMuted }}>{user.email}</div>
+                <div style={{ fontSize: 11, color: B.textMuted, maxWidth: "clamp(100px, 30vw, 200px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>
               </div>
               <button
                 onClick={onSignOut}
@@ -168,6 +162,19 @@ export default function Dashboard({ user, onSignOut, onOpenApp, onSignIn }) {
                   e.currentTarget.style.borderColor = "rgba(255,255,255,0.50)";
                   e.currentTarget.style.color = B.textSecondary;
                   e.currentTarget.style.background = "rgba(255,255,255,0.30)";
+                }}
+                onTouchStart={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
+                  e.currentTarget.style.color = B.red;
+                  e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+                }}
+                onTouchEnd={(e) => {
+                  const el = e.currentTarget;
+                  setTimeout(() => {
+                    el.style.borderColor = "rgba(255,255,255,0.50)";
+                    el.style.color = B.textSecondary;
+                    el.style.background = "rgba(255,255,255,0.30)";
+                  }, 150);
                 }}
               >
                 Sign Out
@@ -203,7 +210,7 @@ export default function Dashboard({ user, onSignOut, onOpenApp, onSignIn }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ marginBottom: 48 }}
+          style={{ marginBottom: "clamp(24px, 5vw, 48px)" }}
         >
           <h1 style={{
             fontSize: "clamp(32px, 5vw, 44px)", fontWeight: 800, color: B.text,
@@ -228,8 +235,8 @@ export default function Dashboard({ user, onSignOut, onOpenApp, onSignIn }) {
         {/* App Grid */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: 24,
+          gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))",
+          gap: "clamp(16px, 3vw, 24px)",
         }}>
           {APPS.map((app, i) => (
             <AppCard

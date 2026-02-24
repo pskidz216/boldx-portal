@@ -86,10 +86,14 @@ export default function AppViewer({ appId, onBack }) {
         exit={{ opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.3 }}
         style={{
-          position: "fixed", inset: 0, zIndex: 200,
+          position: "fixed", top: 0, left: 0, right: 0,
+          height: "100dvh",
+          zIndex: 200,
           display: "flex", flexDirection: "column",
           background: B.bgSolid,
           fontFamily: font,
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
         {/* App top bar — light glass */}
@@ -124,6 +128,19 @@ export default function AppViewer({ appId, onBack }) {
               e.currentTarget.style.color = B.textSecondary;
               e.currentTarget.style.background = "rgba(255,255,255,0.35)";
             }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.borderColor = "rgba(232,135,30,0.4)";
+              e.currentTarget.style.color = B.orange;
+              e.currentTarget.style.background = "rgba(232,135,30,0.08)";
+            }}
+            onTouchEnd={(e) => {
+              const el = e.currentTarget;
+              setTimeout(() => {
+                el.style.borderColor = "rgba(255,255,255,0.50)";
+                el.style.color = B.textSecondary;
+                el.style.background = "rgba(255,255,255,0.35)";
+              }, 150);
+            }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -144,12 +161,13 @@ export default function AppViewer({ appId, onBack }) {
         </div>
 
         {/* App iframe */}
-        <div style={{ flex: 1, position: "relative" }}>
+        <div style={{ flex: 1, position: "relative", overflow: "auto", WebkitOverflowScrolling: "touch" }}>
           <iframe
             ref={iframeRef}
             src={iframeSrc}
             title={app.name}
             onLoad={() => setIframeLoaded(true)}
+            scrolling="yes"
             style={{
               width: "100%", height: "100%", border: "none",
               background: B.white,
