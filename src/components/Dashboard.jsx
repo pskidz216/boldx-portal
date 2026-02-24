@@ -34,6 +34,21 @@ export default function Dashboard({ user, onSignOut, onOpenApp }) {
         pointerEvents: "none",
       }} />
 
+      {/* Testing environment banner */}
+      <div style={{
+        background: "linear-gradient(90deg, #E8871E, #F5A623)",
+        color: "#fff",
+        textAlign: "center",
+        padding: "8px 16px",
+        fontSize: 12,
+        fontWeight: 700,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        fontFamily: font,
+      }}>
+        Testing Environment
+      </div>
+
       {/* Top bar */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
