@@ -86,10 +86,10 @@ function GlassBackground() {
   );
 }
 
-export default function Dashboard({ user, onSignOut, onOpenApp }) {
-  const displayName = user?.user_metadata?.first_name
-    || user?.email?.split("@")[0]
-    || "User";
+export default function Dashboard({ user, onSignOut, onOpenApp, onSignIn }) {
+  const displayName = user
+    ? (user.user_metadata?.first_name || user.email?.split("@")[0] || "User")
+    : "Guest";
 
   return (
     <div style={{
@@ -143,33 +143,51 @@ export default function Dashboard({ user, onSignOut, onOpenApp }) {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: B.text }}>{displayName}</div>
-            <div style={{ fontSize: 11, color: B.textMuted }}>{user?.email}</div>
-          </div>
-          <button
-            onClick={onSignOut}
-            style={{
-              padding: "8px 16px", borderRadius: B.radiusSm,
-              border: "1px solid rgba(255,255,255,0.50)",
-              background: "rgba(255,255,255,0.30)",
-              fontSize: 12, fontWeight: 600, color: B.textSecondary,
-              cursor: "pointer", fontFamily: font, transition: "all 0.2s",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
-              e.currentTarget.style.color = B.red;
-              e.currentTarget.style.background = "rgba(239,68,68,0.08)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.50)";
-              e.currentTarget.style.color = B.textSecondary;
-              e.currentTarget.style.background = "rgba(255,255,255,0.30)";
-            }}
-          >
-            Sign Out
-          </button>
+          {user ? (
+            <>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: B.text }}>{displayName}</div>
+                <div style={{ fontSize: 11, color: B.textMuted }}>{user.email}</div>
+              </div>
+              <button
+                onClick={onSignOut}
+                style={{
+                  padding: "8px 16px", borderRadius: B.radiusSm,
+                  border: "1px solid rgba(255,255,255,0.50)",
+                  background: "rgba(255,255,255,0.30)",
+                  fontSize: 12, fontWeight: 600, color: B.textSecondary,
+                  cursor: "pointer", fontFamily: font, transition: "all 0.2s",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
+                  e.currentTarget.style.color = B.red;
+                  e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.50)";
+                  e.currentTarget.style.color = B.textSecondary;
+                  e.currentTarget.style.background = "rgba(255,255,255,0.30)";
+                }}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onSignIn}
+              style={{
+                padding: "8px 20px", borderRadius: B.radiusSm,
+                border: "none",
+                background: `linear-gradient(135deg, ${B.orange}, ${B.orangeLight})`,
+                fontSize: 12, fontWeight: 700, color: "#fff",
+                cursor: "pointer", fontFamily: font, transition: "all 0.2s",
+                boxShadow: `0 4px 16px ${B.orangeGlow}`,
+              }}
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </motion.div>
 

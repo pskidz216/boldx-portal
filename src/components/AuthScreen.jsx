@@ -10,6 +10,7 @@ export default function AuthScreen({
   authMessage,
   setAuthError,
   setAuthMessage,
+  onBack,
 }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
@@ -274,6 +275,15 @@ export default function AuthScreen({
         <div style={{ textAlign: "center", marginTop: 14, fontSize: 10, color: B.textDim }}>
           Restricted to @thearcstudio.com &amp; @boldxenterprises.com
         </div>
+
+        {onBack && (
+          <div style={{ textAlign: "center", marginTop: 16 }}>
+            <button onClick={onBack} style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: 13, color: B.textSecondary, fontWeight: 500, fontFamily: font,
+            }}>&larr; Continue as Guest</button>
+          </div>
+        )}
       </div>
     </div>
   );
