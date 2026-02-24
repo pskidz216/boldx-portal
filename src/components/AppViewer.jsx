@@ -9,13 +9,31 @@ export default function AppViewer({ appId, onBack }) {
   const app = APPS.find((a) => a.id === appId);
   const iframeRef = useRef(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [iframeSrc, setIframeSrc] = useState(null);
 
-  if (!app) return null;
+  // Build iframe URL with session tokens in the hash fragment
+  // This avoids cross-origin postMessage/storage issues entirely
+  useEffect(() => {
+    if (!app) return;
 
-  // SSO: Send session to iframe via handshake + retry strategy
+    const buildUrl = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const hash = `#portal_access_token=${encodeURIComponent(session.access_token)}&portal_refresh_token=${encodeURIComponent(session.refresh_token)}`;
+        setIframeSrc(app.url + hash);
+      } else {
+        setIframeSrc(app.url);
+      }
+    };
+
+    buildUrl();
+  }, [app?.url, appId]);
+
+  if (!app || !iframeSrc) return null;
+
+  // Also send via postMessage as a fallback
   useEffect(() => {
     if (!iframeLoaded) return;
-
     let cancelled = false;
 
     const sendSession = async () => {
@@ -28,8 +46,7 @@ export default function AppViewer({ appId, onBack }) {
         refresh_token: session.refresh_token,
       };
 
-      // Send immediately, then retry a few times in case React hasn't mounted yet
-      const delays = [0, 300, 800, 1500, 3000];
+      const delays = [0, 500, 1500];
       delays.forEach((ms) => {
         setTimeout(() => {
           if (!cancelled && iframeRef.current?.contentWindow) {
@@ -39,7 +56,6 @@ export default function AppViewer({ appId, onBack }) {
       });
     };
 
-    // Also respond to iframe "ready" requests
     const handleReady = async (event) => {
       if (event.data?.type === "BXE_APP_READY") {
         const { data: { session } } = await supabase.auth.getSession();
@@ -58,11 +74,7 @@ export default function AppViewer({ appId, onBack }) {
 
     window.addEventListener("message", handleReady);
     sendSession();
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener("message", handleReady);
-    };
+    return () => { cancelled = true; window.removeEventListener("message", handleReady); };
   }, [iframeLoaded, appId]);
 
   return (
@@ -130,7 +142,7 @@ export default function AppViewer({ appId, onBack }) {
         <div style={{ flex: 1, position: "relative" }}>
           <iframe
             ref={iframeRef}
-            src={app.url}
+            src={iframeSrc}
             title={app.name}
             onLoad={() => setIframeLoaded(true)}
             style={{
