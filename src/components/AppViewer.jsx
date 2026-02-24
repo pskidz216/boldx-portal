@@ -12,25 +12,57 @@ export default function AppViewer({ appId, onBack }) {
 
   if (!app) return null;
 
-  // SSO: Send the Supabase session token to the iframe once it loads
+  // SSO: Send session to iframe via handshake + retry strategy
   useEffect(() => {
     if (!iframeLoaded) return;
 
+    let cancelled = false;
+
     const sendSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session && iframeRef.current?.contentWindow) {
-        iframeRef.current.contentWindow.postMessage(
-          {
-            type: "BXE_PORTAL_SESSION",
-            access_token: session.access_token,
-            refresh_token: session.refresh_token,
-          },
-          "*" // In production, restrict to specific origins
-        );
+      if (!session || !iframeRef.current?.contentWindow || cancelled) return;
+
+      const msg = {
+        type: "BXE_PORTAL_SESSION",
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+      };
+
+      // Send immediately, then retry a few times in case React hasn't mounted yet
+      const delays = [0, 300, 800, 1500, 3000];
+      delays.forEach((ms) => {
+        setTimeout(() => {
+          if (!cancelled && iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage(msg, "*");
+          }
+        }, ms);
+      });
+    };
+
+    // Also respond to iframe "ready" requests
+    const handleReady = async (event) => {
+      if (event.data?.type === "BXE_APP_READY") {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && iframeRef.current?.contentWindow) {
+          iframeRef.current.contentWindow.postMessage(
+            {
+              type: "BXE_PORTAL_SESSION",
+              access_token: session.access_token,
+              refresh_token: session.refresh_token,
+            },
+            "*"
+          );
+        }
       }
     };
 
+    window.addEventListener("message", handleReady);
     sendSession();
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("message", handleReady);
+    };
   }, [iframeLoaded, appId]);
 
   return (
