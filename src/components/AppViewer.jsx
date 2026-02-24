@@ -92,14 +92,15 @@ export default function AppViewer({ appId, onBack }) {
           fontFamily: font,
         }}
       >
-        {/* App top bar */}
+        {/* App top bar — light glass */}
         <div style={{
           display: "flex", alignItems: "center", gap: 12,
           padding: "10px clamp(16px, 3vw, 24px)",
-          background: "rgba(255,255,255,0.85)",
+          background: "rgba(255,255,255,0.50)",
           backdropFilter: B.blur,
           WebkitBackdropFilter: B.blur,
-          borderBottom: `1px solid ${B.borderLight}`,
+          borderBottom: "1px solid rgba(255,255,255,0.55)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
           flexShrink: 0,
         }}>
           <button
@@ -107,17 +108,21 @@ export default function AppViewer({ appId, onBack }) {
             style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "7px 14px", borderRadius: B.radiusSm,
-              border: `1px solid ${B.border}`, background: B.white,
+              border: "1px solid rgba(255,255,255,0.50)",
+              background: "rgba(255,255,255,0.35)",
               fontSize: 13, fontWeight: 600, color: B.textSecondary,
               cursor: "pointer", fontFamily: font, transition: "all 0.2s",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = B.orange;
+              e.currentTarget.style.borderColor = "rgba(232,135,30,0.4)";
               e.currentTarget.style.color = B.orange;
+              e.currentTarget.style.background = "rgba(232,135,30,0.08)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = B.border;
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.50)";
               e.currentTarget.style.color = B.textSecondary;
+              e.currentTarget.style.background = "rgba(255,255,255,0.35)";
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -126,7 +131,7 @@ export default function AppViewer({ appId, onBack }) {
             Portal
           </button>
 
-          <div style={{ width: 1, height: 20, background: B.borderLight, margin: "0 4px" }} />
+          <div style={{ width: 1, height: 20, background: "rgba(0,0,0,0.08)", margin: "0 4px" }} />
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 18 }}>{app.icon}</span>
@@ -171,7 +176,7 @@ export default function AppViewer({ appId, onBack }) {
                 transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
                 style={{
                   width: 32, height: 32, borderRadius: "50%",
-                  border: `3px solid ${B.borderLight}`,
+                  border: `3px solid rgba(0,0,0,0.08)`,
                   borderTopColor: app.color,
                 }}
               />

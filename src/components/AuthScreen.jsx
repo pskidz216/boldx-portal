@@ -59,10 +59,13 @@ export default function AuthScreen({
   };
 
   const inputStyle = {
-    width: "100%", boxSizing: "border-box", padding: "12px 16px", borderRadius: B.radius,
-    border: `1px solid ${B.borderDark}`, fontSize: 14, outline: "none",
-    background: "rgba(255,255,255,0.6)", backdropFilter: B.blurSm, WebkitBackdropFilter: B.blurSm,
-    color: B.text, transition: "border-color 0.2s", fontFamily: font,
+    width: "100%", boxSizing: "border-box", padding: "13px 16px", borderRadius: B.radius,
+    border: "1px solid rgba(255,255,255,0.50)",
+    fontSize: 14, outline: "none",
+    background: "rgba(255,255,255,0.35)",
+    backdropFilter: B.blurSm, WebkitBackdropFilter: B.blurSm,
+    color: B.text, transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s", fontFamily: font,
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)",
   };
   const labelStyle = {
     fontSize: 11, fontWeight: 600, color: B.textSecondary, marginBottom: 5,
@@ -71,36 +74,82 @@ export default function AuthScreen({
   const tabBtn = (active) => ({
     flex: 1, padding: "10px 0", borderRadius: B.radiusSm, border: "none", cursor: "pointer",
     fontSize: 13, fontWeight: 600, transition: "all 0.2s", fontFamily: font,
-    background: active ? "#fff" : "transparent",
-    color: active ? B.orange : B.textSecondary,
-    boxShadow: active ? "0 1px 3px rgba(0,0,0,0.06)" : "none",
+    background: active ? "rgba(255,255,255,0.50)" : "transparent",
+    color: active ? B.orange : B.textMuted,
+    boxShadow: active ? "0 2px 8px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.6)" : "none",
   });
 
   return (
     <div style={{
-      minHeight: "100vh", background: B.bg, display: "flex",
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #e0c3fc 0%, #c9d6ff 30%, #d4eaf7 50%, #f0d5e0 70%, #fce4d6 100%)",
+      display: "flex",
       alignItems: "center", justifyContent: "center", fontFamily: font,
+      position: "relative", overflow: "hidden",
     }}>
-      {/* Floating glass orbs for background depth */}
+      {/* Animated background blobs */}
       <div style={{
-        position: "fixed", top: -120, right: -80, width: 400, height: 400,
-        borderRadius: "50%", background: "radial-gradient(circle, rgba(232,135,30,0.08) 0%, transparent 70%)",
+        position: "fixed", top: "-15%", right: "-10%", width: 600, height: 600,
+        borderRadius: "50%", filter: "blur(80px)",
+        background: "radial-gradient(circle, rgba(180,140,255,0.45) 0%, transparent 65%)",
+        animation: "blobFloat1 22s ease-in-out infinite",
         pointerEvents: "none",
       }} />
       <div style={{
-        position: "fixed", bottom: -100, left: -60, width: 350, height: 350,
-        borderRadius: "50%", background: "radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%)",
+        position: "fixed", bottom: "-10%", left: "-8%", width: 500, height: 500,
+        borderRadius: "50%", filter: "blur(80px)",
+        background: "radial-gradient(circle, rgba(255,140,180,0.40) 0%, transparent 65%)",
+        animation: "blobFloat2 28s ease-in-out infinite",
+        pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "fixed", top: "40%", left: "55%", width: 450, height: 450,
+        borderRadius: "50%", filter: "blur(80px)",
+        background: "radial-gradient(circle, rgba(120,180,255,0.35) 0%, transparent 65%)",
+        animation: "blobFloat3 25s ease-in-out infinite",
+        pointerEvents: "none",
+      }} />
+
+      {/* 3D glass orbs */}
+      <div style={{
+        position: "fixed", top: "15%", left: "18%",
+        width: 60, height: 60, borderRadius: "50%",
+        background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8), rgba(255,255,255,0.15) 60%)",
+        border: "1px solid rgba(255,255,255,0.5)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.06)",
+        animation: "orbFloat 8s ease-in-out infinite",
+        pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "fixed", bottom: "25%", right: "15%",
+        width: 40, height: 40, borderRadius: "50%",
+        background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.75), rgba(255,255,255,0.1) 60%)",
+        border: "1px solid rgba(255,255,255,0.4)",
+        boxShadow: "0 6px 24px rgba(0,0,0,0.04)",
+        animation: "orbFloat 10s ease-in-out infinite 3s",
         pointerEvents: "none",
       }} />
 
       <div style={{
-        width: "100%", maxWidth: 420, margin: "0 16px", padding: "clamp(24px, 5vw, 40px)",
-        background: B.glassStrong, backdropFilter: B.blurLg, WebkitBackdropFilter: B.blurLg,
-        borderRadius: B.radiusXl, boxShadow: B.shadowXl,
-        border: `1px solid ${B.glassBorder}`, boxSizing: "border-box",
+        position: "relative", zIndex: 10,
+        width: "100%", maxWidth: 440, margin: "0 16px",
+        padding: "clamp(28px, 5vw, 44px)",
+        background: "rgba(255,255,255,0.40)",
+        backdropFilter: B.blurLg, WebkitBackdropFilter: B.blurLg,
+        borderRadius: B.radiusXl,
+        boxShadow: "0 24px 64px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
+        border: "1.5px solid rgba(255,255,255,0.55)",
+        boxSizing: "border-box",
       }}>
+        {/* Top glass highlight */}
+        <div style={{
+          position: "absolute", top: 0, left: 24, right: 24, height: 1,
+          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)",
+          borderRadius: "100px",
+        }} />
+
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <BXELogo size={44} />
+          <BXELogo size={44} color={B.orange} />
           <div style={{
             marginTop: 10, fontSize: 11, fontWeight: 700, color: B.textSecondary,
             textTransform: "uppercase", letterSpacing: "0.16em",
@@ -108,7 +157,7 @@ export default function AuthScreen({
         </div>
 
         {mode !== "forgot" && (
-          <div style={{ display: "flex", background: "rgba(0,0,0,0.04)", borderRadius: B.radius, padding: 3, marginBottom: 24 }}>
+          <div style={{ display: "flex", background: "rgba(255,255,255,0.25)", borderRadius: B.radius, padding: 3, marginBottom: 24 }}>
             <button onClick={() => switchMode("login")} style={tabBtn(mode === "login")}>Sign In</button>
             <button onClick={() => switchMode("signup")} style={tabBtn(mode === "signup")}>Create Account</button>
           </div>
@@ -158,14 +207,14 @@ export default function AuthScreen({
 
         {authError && (
           <div style={{
-            padding: "10px 14px", background: B.redSoft, borderRadius: B.radiusSm,
-            fontSize: 13, color: B.red, marginBottom: 16, border: "1px solid rgba(239,68,68,0.15)",
+            padding: "10px 14px", background: "rgba(239,68,68,0.10)", borderRadius: B.radiusSm,
+            fontSize: 13, color: B.red, marginBottom: 16, border: "1px solid rgba(239,68,68,0.2)",
           }}>{authError}</div>
         )}
         {authMessage && (
           <div style={{
-            padding: "10px 14px", background: B.greenSoft, borderRadius: B.radiusSm,
-            fontSize: 13, color: B.green, marginBottom: 16, border: "1px solid rgba(22,163,74,0.15)",
+            padding: "10px 14px", background: "rgba(16,185,129,0.10)", borderRadius: B.radiusSm,
+            fontSize: 13, color: B.green, marginBottom: 16, border: "1px solid rgba(16,185,129,0.2)",
           }}>{authMessage}</div>
         )}
 
@@ -173,11 +222,11 @@ export default function AuthScreen({
           onClick={mode === "login" ? handleLogin : mode === "signup" ? handleSignup : handleForgot}
           disabled={localLoading}
           style={{
-            width: "100%", padding: "13px 0", borderRadius: B.radius, border: "none",
+            width: "100%", padding: "14px 0", borderRadius: B.radius, border: "none",
             cursor: localLoading ? "wait" : "pointer", fontSize: 14, fontWeight: 700,
             color: "#fff", fontFamily: font,
-            background: localLoading ? "rgba(232,135,30,0.5)" : `linear-gradient(135deg, ${B.orange}, ${B.orangeLight})`,
-            boxShadow: localLoading ? "none" : `0 4px 14px ${B.orangeGlow}`,
+            background: localLoading ? "rgba(232,135,30,0.4)" : `linear-gradient(135deg, ${B.orange}, ${B.orangeLight})`,
+            boxShadow: localLoading ? "none" : `0 4px 20px ${B.orangeGlow}`,
             transition: "all 0.2s", opacity: localLoading ? 0.7 : 1,
           }}>
           {localLoading
@@ -188,16 +237,19 @@ export default function AuthScreen({
         {mode !== "forgot" && (
           <>
             <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "18px 0" }}>
-              <div style={{ flex: 1, height: 1, background: B.borderDark }} />
-              <span style={{ fontSize: 11, fontWeight: 500, color: B.textSecondary, textTransform: "uppercase", letterSpacing: "0.08em" }}>or</span>
-              <div style={{ flex: 1, height: 1, background: B.borderDark }} />
+              <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+              <span style={{ fontSize: 11, fontWeight: 500, color: B.textMuted, textTransform: "uppercase", letterSpacing: "0.08em" }}>or</span>
+              <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
             </div>
             <button onClick={onGoogleSignIn} style={{
               width: "100%", padding: "12px 0", borderRadius: B.radius,
-              border: "1px solid rgba(0,0,0,0.10)", cursor: "pointer",
-              fontSize: 14, fontWeight: 600, color: B.text, background: "#fff",
+              border: "1px solid rgba(255,255,255,0.50)", cursor: "pointer",
+              fontSize: 14, fontWeight: 600, color: B.text,
+              background: "rgba(255,255,255,0.40)",
+              backdropFilter: B.blurSm, WebkitBackdropFilter: B.blurSm,
               transition: "all 0.2s", display: "flex", alignItems: "center",
-              justifyContent: "center", gap: 10, fontFamily: font, boxShadow: B.shadow,
+              justifyContent: "center", gap: 10, fontFamily: font,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5)",
             }}>
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -215,12 +267,12 @@ export default function AuthScreen({
             <button onClick={() => switchMode("login")} style={{
               background: "none", border: "none", cursor: "pointer",
               fontSize: 13, color: B.orange, fontWeight: 500, fontFamily: font,
-            }}>← Back to Sign In</button>
+            }}>&larr; Back to Sign In</button>
           </div>
         )}
 
-        <div style={{ textAlign: "center", marginTop: 12, fontSize: 10, color: B.textMuted }}>
-          Restricted to @thearcstudio.com & @boldxenterprises.com
+        <div style={{ textAlign: "center", marginTop: 14, fontSize: 10, color: B.textDim }}>
+          Restricted to @thearcstudio.com &amp; @boldxenterprises.com
         </div>
       </div>
     </div>

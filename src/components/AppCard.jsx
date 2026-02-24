@@ -9,7 +9,7 @@ export default function AppCard({ app, onClick, index }) {
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.5, delay: index * 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -17,54 +17,75 @@ export default function AppCard({ app, onClick, index }) {
         position: "relative",
         cursor: "pointer",
         borderRadius: B.radiusXl,
-        background: hovered ? "rgba(255,255,255,0.78)" : B.glassStrong,
+        background: hovered
+          ? "rgba(255,255,255,0.55)"
+          : "rgba(255,255,255,0.35)",
         backdropFilter: B.blurLg,
         WebkitBackdropFilter: B.blurLg,
-        border: `1px solid ${hovered ? "rgba(232,135,30,0.25)" : B.glassBorder}`,
+        border: `1.5px solid ${hovered ? "rgba(255,255,255,0.80)" : "rgba(255,255,255,0.55)"}`,
         boxShadow: hovered
-          ? `0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(232,135,30,0.1)`
-          : B.shadowMd,
+          ? `0 16px 48px rgba(0,0,0,0.10), 0 0 0 1px rgba(255,255,255,0.3), 0 0 60px ${app.color}12`
+          : "0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.15)",
         padding: "32px 28px",
-        transition: "all 0.35s cubic-bezier(0.25,0.46,0.45,0.94)",
-        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "all 0.4s cubic-bezier(0.25,0.46,0.45,0.94)",
+        transform: hovered ? "translateY(-6px)" : "translateY(0)",
         overflow: "hidden",
         fontFamily: font,
       }}
     >
+      {/* Top edge glass highlight — refraction line */}
+      <div style={{
+        position: "absolute", top: 0, left: 16, right: 16, height: 1,
+        background: `linear-gradient(90deg, transparent, rgba(255,255,255,${hovered ? 0.9 : 0.6}), transparent)`,
+        transition: "all 0.4s",
+      }} />
+
+      {/* Inner glow at top */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: 80,
+        background: `linear-gradient(180deg, rgba(255,255,255,${hovered ? 0.25 : 0.15}), transparent)`,
+        borderRadius: `${B.radiusXl}px ${B.radiusXl}px 0 0`,
+        pointerEvents: "none",
+        transition: "all 0.4s",
+      }} />
+
       {/* Accent gradient line at top */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 3,
+        position: "absolute", top: 0, left: 0, right: 0, height: 2,
         background: `linear-gradient(90deg, ${app.color}, ${app.colorEnd || app.color})`,
         borderRadius: `${B.radiusXl}px ${B.radiusXl}px 0 0`,
         opacity: hovered ? 1 : 0.6,
-        transition: "opacity 0.3s",
+        transition: "opacity 0.4s",
       }} />
 
-      {/* Icon */}
+      {/* Icon — glass circle */}
       <div style={{
-        width: 52, height: 52, borderRadius: B.radiusLg,
-        background: `linear-gradient(135deg, ${app.color}15, ${app.color}08)`,
-        border: `1px solid ${app.color}20`,
+        width: 56, height: 56, borderRadius: B.radiusLg,
+        background: `linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.3))`,
+        border: `1px solid rgba(255,255,255,0.6)`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: 20, fontSize: 24,
-        transition: "transform 0.3s",
-        transform: hovered ? "scale(1.05)" : "scale(1)",
+        marginBottom: 20, fontSize: 26,
+        transition: "all 0.4s",
+        transform: hovered ? "scale(1.08)" : "scale(1)",
+        boxShadow: hovered
+          ? `0 4px 20px ${app.color}25, inset 0 1px 0 rgba(255,255,255,0.6)`
+          : "0 2px 8px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.5)",
       }}>
         {app.icon}
       </div>
 
       {/* Title */}
       <div style={{
-        fontSize: 17, fontWeight: 700, color: B.text,
-        marginBottom: 6, letterSpacing: "-0.01em",
+        fontSize: 18, fontWeight: 700, color: B.text,
+        marginBottom: 8, letterSpacing: "-0.01em",
       }}>
         {app.name}
       </div>
 
       {/* Description */}
       <div style={{
-        fontSize: 13, color: B.textSecondary, lineHeight: 1.5,
-        marginBottom: 20,
+        fontSize: 13, color: B.textSecondary, lineHeight: 1.6,
+        marginBottom: 22,
       }}>
         {app.description}
       </div>
@@ -79,6 +100,11 @@ export default function AppCard({ app, onClick, index }) {
           <div style={{
             width: 7, height: 7, borderRadius: "50%",
             background: app.status === "live" ? B.green : app.status === "beta" ? B.yellow : B.textMuted,
+            boxShadow: app.status === "live"
+              ? `0 0 8px ${B.green}50`
+              : app.status === "beta"
+                ? `0 0 8px ${B.yellow}50`
+                : "none",
           }} />
           <span style={{
             fontSize: 11, fontWeight: 600, textTransform: "uppercase",
