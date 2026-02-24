@@ -7,7 +7,7 @@ import AppViewer from "./components/AppViewer";
 export default function App() {
   const auth = useAuth();
   const [activeApp, setActiveApp] = useState(null);
-  const [showLogin, setShowLogin] = useState(false);
+
 
   // Loading state
   if (auth.loading) {
@@ -30,8 +30,8 @@ export default function App() {
     );
   }
 
-  // Show login screen if user explicitly requests it
-  if (showLogin && !auth.user) {
+  // No user — show login screen
+  if (!auth.user) {
     return (
       <AuthScreen
         onLogin={async (email, password, firstName, lastName, isSignup) => {
@@ -47,19 +47,17 @@ export default function App() {
         authMessage={auth.authMessage}
         setAuthError={auth.setAuthError}
         setAuthMessage={auth.setAuthMessage}
-        onBack={() => setShowLogin(false)}
       />
     );
   }
 
-  // Always show portal — guest or authenticated
+  // Authenticated — show portal dashboard
   return (
     <>
       <Dashboard
         user={auth.user}
-        onSignOut={auth.user ? auth.signOut : null}
+        onSignOut={auth.signOut}
         onOpenApp={setActiveApp}
-        onSignIn={() => setShowLogin(true)}
       />
       {activeApp && (
         <AppViewer
