@@ -2,39 +2,7 @@ import { motion } from "framer-motion";
 import { B, font } from "../theme";
 import BXELogo from "./BXELogo";
 import AppCard from "./AppCard";
-
-const APPS = [
-  {
-    id: "travel",
-    name: "BXE Travel",
-    description: "Corporate travel booking, flight search, airline miles tracking, and traveler profiles.",
-    icon: "\u2708\uFE0F",
-    color: "#2563EB",
-    colorEnd: "#06B6D4",
-    status: "live",
-    url: null, // Will be iframe or external link
-  },
-  {
-    id: "hub",
-    name: "BoldX Hub",
-    description: "Portfolio management, company hierarchy visualization, and deal tracking dashboard.",
-    icon: "\uD83D\uDCCA",
-    color: "#8B5CF6",
-    colorEnd: "#EC4899",
-    status: "live",
-    url: null,
-  },
-  {
-    id: "intake",
-    name: "BXE Intake",
-    description: "Investment intake portal with multi-section wizard, document uploads, and admin review.",
-    icon: "\uD83D\uDCCB",
-    color: "#E8871E",
-    colorEnd: "#F5A623",
-    status: "beta",
-    url: null,
-  },
-];
+import APPS from "../config/apps";
 
 export default function Dashboard({ user, onSignOut, onOpenApp }) {
   const displayName = user?.user_metadata?.first_name

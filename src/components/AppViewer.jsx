@@ -1,36 +1,37 @@
+import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { B, font } from "../theme";
 import BXELogo from "./BXELogo";
-
-const APP_META = {
-  travel: {
-    name: "BXE Travel",
-    icon: "\u2708\uFE0F",
-    color: "#2563EB",
-    // In production, these would be deployed URLs
-    devPort: 5174,
-  },
-  hub: {
-    name: "BoldX Hub",
-    icon: "\uD83D\uDCCA",
-    color: "#8B5CF6",
-    devPort: 5175,
-  },
-  intake: {
-    name: "BXE Intake",
-    icon: "\uD83D\uDCCB",
-    color: "#E8871E",
-    devPort: 5176,
-  },
-};
+import APPS from "../config/apps";
+import { supabase } from "../lib/supabase";
 
 export default function AppViewer({ appId, onBack }) {
-  const meta = APP_META[appId];
-  if (!meta) return null;
+  const app = APPS.find((a) => a.id === appId);
+  const iframeRef = useRef(null);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
-  // For local dev, point to sibling app dev servers
-  // In production, these would be deployed URLs
-  const appUrl = `http://localhost:${meta.devPort}`;
+  if (!app) return null;
+
+  // SSO: Send the Supabase session token to the iframe once it loads
+  useEffect(() => {
+    if (!iframeLoaded) return;
+
+    const sendSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(
+          {
+            type: "BXE_PORTAL_SESSION",
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+          },
+          "*" // In production, restrict to specific origins
+        );
+      }
+    };
+
+    sendSession();
+  }, [iframeLoaded, appId]);
 
   return (
     <AnimatePresence>
@@ -84,8 +85,8 @@ export default function AppViewer({ appId, onBack }) {
           <div style={{ width: 1, height: 20, background: B.borderLight, margin: "0 4px" }} />
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 18 }}>{meta.icon}</span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: B.text }}>{meta.name}</span>
+            <span style={{ fontSize: 18 }}>{app.icon}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: B.text }}>{app.name}</span>
           </div>
 
           <div style={{ flex: 1 }} />
@@ -96,8 +97,10 @@ export default function AppViewer({ appId, onBack }) {
         {/* App iframe */}
         <div style={{ flex: 1, position: "relative" }}>
           <iframe
-            src={appUrl}
-            title={meta.name}
+            ref={iframeRef}
+            src={app.url}
+            title={app.name}
+            onLoad={() => setIframeLoaded(true)}
             style={{
               width: "100%", height: "100%", border: "none",
               background: B.white,
@@ -106,31 +109,33 @@ export default function AppViewer({ appId, onBack }) {
           />
 
           {/* Loading overlay — visible until iframe loads */}
-          <motion.div
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            transition={{ delay: 1.5, duration: 0.5 }}
-            style={{
-              position: "absolute", inset: 0,
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center",
-              background: B.bgSolid,
-              pointerEvents: "none",
-            }}
-          >
+          {!iframeLoaded && (
             <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
               style={{
-                width: 32, height: 32, borderRadius: "50%",
-                border: `3px solid ${B.borderLight}`,
-                borderTopColor: meta.color,
+                position: "absolute", inset: 0,
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center",
+                background: B.bgSolid,
               }}
-            />
-            <div style={{ marginTop: 16, fontSize: 13, color: B.textMuted, fontWeight: 500 }}>
-              Loading {meta.name}...
-            </div>
-          </motion.div>
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+                style={{
+                  width: 32, height: 32, borderRadius: "50%",
+                  border: `3px solid ${B.borderLight}`,
+                  borderTopColor: app.color,
+                }}
+              />
+              <div style={{ marginTop: 16, fontSize: 13, color: B.textMuted, fontWeight: 500 }}>
+                Loading {app.name}...
+              </div>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>
