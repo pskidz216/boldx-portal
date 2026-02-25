@@ -10,6 +10,7 @@ const APPS = [
     color: "#2563EB",
     colorEnd: "#06B6D4",
     status: "live",
+    guestAccess: true,
     // Deployed URL (env var) — falls back to local dev port
     url: import.meta.env.VITE_TRAVEL_URL || "http://localhost:5174",
   },
@@ -21,6 +22,7 @@ const APPS = [
     color: "#8B5CF6",
     colorEnd: "#EC4899",
     status: "live",
+    guestAccess: true,
     url: import.meta.env.VITE_HUB_URL || "http://localhost:5175",
   },
   {
@@ -31,6 +33,7 @@ const APPS = [
     color: "#E8871E",
     colorEnd: "#F5A623",
     status: "beta",
+    guestAccess: false,
     url: import.meta.env.VITE_INTAKE_URL || "http://localhost:5176",
   },
 ];

@@ -7,7 +7,7 @@ import AppViewer from "./components/AppViewer";
 export default function App() {
   const auth = useAuth();
   const [activeApp, setActiveApp] = useState(null);
-
+  const [isGuest, setIsGuest] = useState(false);
 
   // Loading state
   if (auth.loading) {
@@ -30,8 +30,8 @@ export default function App() {
     );
   }
 
-  // No user — show login screen
-  if (!auth.user) {
+  // No user and not guest — show login screen
+  if (!auth.user && !isGuest) {
     return (
       <AuthScreen
         onLogin={async (email, password, firstName, lastName, isSignup) => {
@@ -47,16 +47,20 @@ export default function App() {
         authMessage={auth.authMessage}
         setAuthError={auth.setAuthError}
         setAuthMessage={auth.setAuthMessage}
+        onBack={() => setIsGuest(true)}
       />
     );
   }
 
-  // Authenticated — show portal dashboard
+  // Guest or authenticated — show portal dashboard
+  const guestMode = !auth.user && isGuest;
   return (
     <>
       <Dashboard
         user={auth.user}
-        onSignOut={auth.signOut}
+        guestMode={guestMode}
+        onSignOut={auth.user ? auth.signOut : null}
+        onSignIn={() => setIsGuest(false)}
         onOpenApp={setActiveApp}
       />
       {activeApp && (

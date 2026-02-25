@@ -80,8 +80,11 @@ function GlassBackground() {
   );
 }
 
-export default function Dashboard({ user, onSignOut, onOpenApp }) {
-  const displayName = user.user_metadata?.first_name || user.email?.split("@")[0] || "User";
+export default function Dashboard({ user, guestMode, onSignOut, onSignIn, onOpenApp }) {
+  const displayName = guestMode
+    ? "Guest"
+    : (user?.user_metadata?.first_name || user?.email?.split("@")[0] || "User");
+  const visibleApps = guestMode ? APPS.filter((a) => a.guestAccess) : APPS;
 
   return (
     <div style={{
@@ -135,46 +138,64 @@ export default function Dashboard({ user, onSignOut, onOpenApp }) {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: B.text }}>{displayName}</div>
-            <div style={{ fontSize: 11, color: B.textMuted, maxWidth: "clamp(100px, 30vw, 200px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>
-          </div>
-          <button
-            onClick={onSignOut}
-            style={{
-              padding: "8px 16px", borderRadius: B.radiusSm,
-              border: "1px solid rgba(255,255,255,0.50)",
-              background: "rgba(255,255,255,0.30)",
-              fontSize: 12, fontWeight: 600, color: B.textSecondary,
-              cursor: "pointer", fontFamily: font, transition: "all 0.2s",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
-              e.currentTarget.style.color = B.red;
-              e.currentTarget.style.background = "rgba(239,68,68,0.08)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.50)";
-              e.currentTarget.style.color = B.textSecondary;
-              e.currentTarget.style.background = "rgba(255,255,255,0.30)";
-            }}
-            onTouchStart={(e) => {
-              e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
-              e.currentTarget.style.color = B.red;
-              e.currentTarget.style.background = "rgba(239,68,68,0.08)";
-            }}
-            onTouchEnd={(e) => {
-              const el = e.currentTarget;
-              setTimeout(() => {
-                el.style.borderColor = "rgba(255,255,255,0.50)";
-                el.style.color = B.textSecondary;
-                el.style.background = "rgba(255,255,255,0.30)";
-              }, 150);
-            }}
-          >
-            Sign Out
-          </button>
+          {guestMode ? (
+            <button
+              onClick={onSignIn}
+              style={{
+                padding: "8px 20px", borderRadius: B.radiusSm,
+                border: "none",
+                background: `linear-gradient(135deg, ${B.orange}, ${B.orangeLight})`,
+                fontSize: 12, fontWeight: 700, color: "#fff",
+                cursor: "pointer", fontFamily: font, transition: "all 0.2s",
+                boxShadow: `0 4px 16px ${B.orangeGlow}`,
+              }}
+            >
+              Sign In
+            </button>
+          ) : (
+            <>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: B.text }}>{displayName}</div>
+                <div style={{ fontSize: 11, color: B.textMuted, maxWidth: "clamp(100px, 30vw, 200px)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>
+              </div>
+              <button
+                onClick={onSignOut}
+                style={{
+                  padding: "8px 16px", borderRadius: B.radiusSm,
+                  border: "1px solid rgba(255,255,255,0.50)",
+                  background: "rgba(255,255,255,0.30)",
+                  fontSize: 12, fontWeight: 600, color: B.textSecondary,
+                  cursor: "pointer", fontFamily: font, transition: "all 0.2s",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
+                  e.currentTarget.style.color = B.red;
+                  e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.50)";
+                  e.currentTarget.style.color = B.textSecondary;
+                  e.currentTarget.style.background = "rgba(255,255,255,0.30)";
+                }}
+                onTouchStart={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
+                  e.currentTarget.style.color = B.red;
+                  e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+                }}
+                onTouchEnd={(e) => {
+                  const el = e.currentTarget;
+                  setTimeout(() => {
+                    el.style.borderColor = "rgba(255,255,255,0.50)";
+                    el.style.color = B.textSecondary;
+                    el.style.background = "rgba(255,255,255,0.30)";
+                  }, 150);
+                }}
+              >
+                Sign Out
+              </button>
+            </>
+          )}
         </div>
       </motion.div>
 
@@ -218,7 +239,7 @@ export default function Dashboard({ user, onSignOut, onOpenApp }) {
           gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))",
           gap: "clamp(16px, 3vw, 24px)",
         }}>
-          {APPS.map((app, i) => (
+          {visibleApps.map((app, i) => (
             <AppCard
               key={app.id}
               app={app}
